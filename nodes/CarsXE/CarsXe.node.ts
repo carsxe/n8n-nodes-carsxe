@@ -15,7 +15,7 @@ export class CarsXe implements INodeType {
 		icon: 'file:carsxeLogo.svg',
 		group: ['transform'],
 		version: 1,
-		subtitle: '={{$parameter["operation"]}}',
+		subtitle: '={{$parameter["resource"] + ": " + $parameter["operation"]}}',
 		description: 'Interact with CarsXE API for vehicle data',
 		defaults: {
 			name: 'CarsXE',
@@ -30,84 +30,164 @@ export class CarsXe implements INodeType {
 			},
 		],
 		properties: [
-			// Operation selector
+			// ===== RESOURCE SELECTOR =====
+			{
+				displayName: 'Resource',
+				name: 'resource',
+				type: 'options',
+				noDataExpression: true,
+				options: [
+					{
+						name: 'Diagnostic',
+						value: 'diagnostic',
+					},
+					{
+						name: 'License Plate',
+						value: 'plate',
+					},
+					{
+						name: 'Vehicle Data',
+						value: 'vehicle',
+					},
+					{
+						name: 'VIN',
+						value: 'vin',
+					},
+				],
+				default: 'vin',
+			},
+
+			// ===== VIN OPERATIONS (Alphabetically sorted) =====
 			{
 				displayName: 'Operation',
 				name: 'operation',
 				type: 'options',
 				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['vin'],
+					},
+				},
 				options: [
 					{
-						name: 'Decode License Plate',
-						value: 'plateDecoder',
-						description: 'Decode license plate information',
-						action: 'Decode license plate information',
+						name: 'Decode International VIN',
+						value: 'intVinDecoder',
+						action: 'Decode an international VIN',
+						description: 'Decode VIN with worldwide support',
 					},
 					{
-						name: 'Decode OBD Codes',
-						value: 'obdCodesDecoder',
-						description: 'Decode OBD error/diagnostic codes',
-						action: 'Decode OBD codes',
-					},
-					{
-						name: 'Decode VIN & Get Specs',
-						value: 'specs',
-						description: 'Decode VIN and get full vehicle specifications',
-						action: 'Decode VIN and get full vehicle specifications',
+						name: 'Get History Report',
+						value: 'history',
+						action: 'Get a vehicle history report',
+						description: 'Retrieve vehicle history',
 					},
 					{
 						name: 'Get Market Value',
 						value: 'marketValue',
+						action: 'Get a market value estimate',
 						description: 'Estimate vehicle market value based on VIN',
-						action: 'Estimate vehicle market value',
 					},
 					{
 						name: 'Get Safety Recalls',
 						value: 'recalls',
+						action: 'Get safety recall information',
 						description: 'Get safety recall data for a VIN',
-						action: 'Get safety recalls',
 					},
 					{
-						name: 'Get Vehicle History',
-						value: 'history',
-						description: 'Retrieve vehicle history report',
-						action: 'Retrieve vehicle history',
-					},
-					{
-						name: 'Get Vehicle Images',
-						value: 'images',
-						description: 'Fetch vehicle images by make, model, year, trim',
-						action: 'Fetch vehicle images',
-					},
-					{
-						name: 'International VIN Decoder',
-						value: 'intVinDecoder',
-						description: 'Decode VIN with worldwide support',
-						action: 'Decode VIN with worldwide support',
-					},
-					{
-						name: 'Plate Image Recognition',
-						value: 'plateImageRecognition',
-						description: 'Read and decode plates from images',
-						action: 'Read and decode plates from images',
-					},
-					{
-						name: 'Query by Year/Make/Model',
-						value: 'yearMakeModel',
-						description: 'Query vehicle by year, make, model and trim',
-						action: 'Query vehicle by year make model',
-					},
-					{
-						name: 'VIN OCR',
-						value: 'vinOcr',
-						description: 'Extract VINs from images using OCR',
-						action: 'Extract vi ns from images',
+						name: 'Get Specs',
+						value: 'specs',
+						action: 'Get vehicle specifications',
+						description: 'Retrieve full vehicle specifications',
 					},
 				],
 				default: 'specs',
 			},
 
-			// ===== SPECS PARAMETERS =====
+			// ===== LICENSE PLATE OPERATIONS (Alphabetically sorted) =====
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['plate'],
+					},
+				},
+				options: [
+					{
+						name: 'Decode License Plate',
+						value: 'plateDecoder',
+						action: 'Decode a license plate',
+						description: 'Decode license plate info (plate, country)',
+					},
+					{
+						name: 'Recognize Plate From Image',
+						value: 'plateImageRecognition',
+						action: 'Recognize a license plate from image',
+						description: 'Read and decode plates from images',
+					},
+				],
+				default: 'plateDecoder',
+			},
+
+			// ===== VEHICLE DATA OPERATIONS (Alphabetically sorted) =====
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['vehicle'],
+					},
+				},
+				options: [
+					{
+						name: 'Get Images',
+						value: 'images',
+						action: 'Get vehicle images',
+						description: 'Fetch images by make, model, year, trim',
+					},
+					{
+						name: 'Query by Year/Make/Model',
+						value: 'yearMakeModel',
+						action: 'Query a vehicle by year make and model',
+						description: 'Query vehicle by year, make, model and trim (optional)',
+					},
+				],
+				default: 'images',
+			},
+
+			// ===== DIAGNOSTIC OPERATIONS (Alphabetically sorted) =====
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['diagnostic'],
+					},
+				},
+				options: [
+					{
+						name: 'Decode OBD Code',
+						value: 'obdCodesDecoder',
+						action: 'Decode an OBD diagnostic code',
+						description: 'Decode OBD error/diagnostic codes',
+					},
+					{
+						name: 'Extract VIN From Image',
+						value: 'vinOcr',
+						action: 'Extract a VIN from image using OCR',
+						description: 'Extract VINs from images using OCR',
+					},
+				],
+				default: 'obdCodesDecoder',
+			},
+
+			// ===== VIN PARAMETERS =====
 			{
 				displayName: 'VIN',
 				name: 'vin',
@@ -115,11 +195,12 @@ export class CarsXe implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						operation: ['specs'],
+						resource: ['vin'],
+						operation: ['specs', 'intVinDecoder', 'history', 'marketValue', 'recalls'],
 					},
 				},
 				default: '',
-				placeholder: 'WBAFR7C57CC811956',
+				placeholder: 'e.g. WBAFR7C57CC811956',
 				description: 'Vehicle Identification Number (17 characters)',
 			},
 			{
@@ -130,6 +211,7 @@ export class CarsXe implements INodeType {
 				default: {},
 				displayOptions: {
 					show: {
+						resource: ['vin'],
 						operation: ['specs'],
 					},
 				},
@@ -150,24 +232,31 @@ export class CarsXe implements INodeType {
 					},
 				],
 			},
-
-			// ===== INT VIN DECODER PARAMETERS =====
 			{
-				displayName: 'VIN',
-				name: 'vin',
-				type: 'string',
-				required: true,
+				displayName: 'Additional Options',
+				name: 'additionalOptions',
+				type: 'collection',
+				placeholder: 'Add Option',
+				default: {},
 				displayOptions: {
 					show: {
-						operation: ['intVinDecoder'],
+						resource: ['vin'],
+						operation: ['marketValue'],
 					},
 				},
-				default: '',
-				placeholder: 'WF0MXXGBWM8R43240',
-				description: 'Vehicle Identification Number (17 characters)',
+				options: [
+					{
+						displayName: 'State',
+						name: 'state',
+						type: 'string',
+						default: '',
+						placeholder: 'e.g. CA',
+						description: 'State code for more accurate market valuation (optional)',
+					},
+				],
 			},
 
-			// ===== PLATE DECODER PARAMETERS =====
+			// ===== LICENSE PLATE PARAMETERS =====
 			{
 				displayName: 'License Plate',
 				name: 'plate',
@@ -175,26 +264,27 @@ export class CarsXe implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
+						resource: ['plate'],
 						operation: ['plateDecoder'],
 					},
 				},
 				default: '',
-				placeholder: '7XER187',
+				placeholder: 'e.g. 7XER187',
 				description: 'License plate number',
 			},
 			{
 				displayName: 'Country',
 				name: 'country',
 				type: 'string',
-				default: '',
-				placeholder: 'US',
-				required: true,
+				default: 'US',
 				displayOptions: {
 					show: {
+						resource: ['plate'],
 						operation: ['plateDecoder'],
 					},
 				},
-				description: 'Country code (e.g., US, CA, AU, UK, PK)',
+				placeholder: 'e.g. US',
+				description: 'Country code (always required except for US where it defaults to US)',
 			},
 			{
 				displayName: 'Additional Options',
@@ -204,272 +294,46 @@ export class CarsXe implements INodeType {
 				default: {},
 				displayOptions: {
 					show: {
+						resource: ['plate'],
 						operation: ['plateDecoder'],
 					},
 				},
 				options: [
-					{
-						displayName: 'State',
-						name: 'state',
-						type: 'string',
-						default: '',
-						placeholder: 'CA',
-						description: 'State/Province code (required for US, AU, CA, etc.)',
-					},
 					{
 						displayName: 'District',
 						name: 'district',
 						type: 'string',
 						default: '',
-						placeholder: 'Islamabad',
+						placeholder: 'e.g. Islamabad',
 						description: 'District (required for Pakistan)',
 					},
-				],
-			},
-
-			// ===== MARKET VALUE PARAMETERS =====
-			{
-				displayName: 'VIN',
-				name: 'vin',
-				type: 'string',
-				required: true,
-				displayOptions: {
-					show: {
-						operation: ['marketValue'],
-					},
-				},
-				default: '',
-				placeholder: 'WBAFR7C57CC811956',
-				description: 'Vehicle Identification Number',
-			},
-			{
-				displayName: 'Additional Options',
-				name: 'additionalOptions',
-				type: 'collection',
-				placeholder: 'Add Option',
-				default: {},
-				displayOptions: {
-					show: {
-						operation: ['marketValue'],
-					},
-				},
-				options: [
 					{
 						displayName: 'State',
 						name: 'state',
 						type: 'string',
 						default: '',
-						placeholder: 'CA',
-						description: 'State code for more accurate market valuation',
+						placeholder: 'e.g. CA',
+						description: 'State/Province code (required for US, AU, CA, etc.)',
 					},
 				],
 			},
-
-			// ===== HISTORY PARAMETERS =====
 			{
-				displayName: 'VIN',
-				name: 'vin',
+				displayName: 'Upload URL',
+				name: 'uploadUrl',
 				type: 'string',
 				required: true,
 				displayOptions: {
 					show: {
-						operation: ['history'],
-					},
-				},
-				default: '',
-				placeholder: 'WBAFR7C57CC811956',
-				description: 'Vehicle Identification Number',
-			},
-
-			// ===== IMAGES PARAMETERS =====
-			{
-				displayName: 'Make',
-				name: 'make',
-				type: 'string',
-				required: true,
-				displayOptions: {
-					show: {
-						operation: ['images'],
-					},
-				},
-				default: '',
-				placeholder: 'toyota',
-				description: 'Vehicle make (e.g., toyota, honda, ford)',
-			},
-			{
-				displayName: 'Model',
-				name: 'model',
-				type: 'string',
-				required: true,
-				displayOptions: {
-					show: {
-						operation: ['images'],
-					},
-				},
-				default: '',
-				placeholder: 'tacoma',
-				description: 'Vehicle model',
-			},
-			{
-				displayName: 'Additional Options',
-				name: 'additionalOptions',
-				type: 'collection',
-				placeholder: 'Add Option',
-				default: {},
-				displayOptions: {
-					show: {
-						operation: ['images'],
-					},
-				},
-				options: [
-					{
-						displayName: 'Angle',
-						name: 'angle',
-						type: 'options',
-						options: [
-							{ name: 'Front', value: 'front' },
-							{ name: 'Side', value: 'side' },
-							{ name: 'Rear', value: 'rear' },
-							{ name: '3/4 Front', value: '3quarter' },
-						],
-						default: 'front',
-						description: 'Image angle/view',
-					},
-					{
-						displayName: 'Color',
-						name: 'color',
-						type: 'color',
-						default: '',
-						description: 'Vehicle color',
-					},
-					{
-						displayName: 'Format',
-						name: 'format',
-						type: 'options',
-						options: [
-							{ name: 'JSON', value: 'json' },
-							{ name: 'XML', value: 'xml' },
-						],
-						default: 'json',
-						description: 'Response format',
-					},
-					{
-						displayName: 'License',
-						name: 'license',
-						type: 'boolean',
-						default: false,
-						description: 'Whether to include license plate in image',
-					},
-					{
-						displayName: 'Photo Type',
-						name: 'photoType',
-						type: 'options',
-						options: [
-							{ name: 'Stock', value: 'stock' },
-							{ name: 'Real', value: 'real' },
-						],
-						default: 'stock',
-						description: 'Type of photo (stock or real)',
-					},
-					{
-						displayName: 'Size',
-						name: 'size',
-						type: 'options',
-						options: [
-							{ name: 'Small', value: 'small' },
-							{ name: 'Medium', value: 'medium' },
-							{ name: 'Large', value: 'large' },
-						],
-						default: 'medium',
-						description: 'Image size',
-					},
-					{
-						displayName: 'Transparent',
-						name: 'transparent',
-						type: 'boolean',
-						default: false,
-						description: 'Whether to return transparent background images',
-					},
-					{
-						displayName: 'Trim',
-						name: 'trim',
-						type: 'string',
-						default: '',
-						placeholder: 'SE',
-						description: 'Vehicle trim level',
-					},
-					{
-						displayName: 'Year',
-						name: 'year',
-						type: 'number',
-						default: 2024,
-						description: 'Vehicle year',
-					},
-				],
-			},
-
-			// ===== RECALLS PARAMETERS =====
-			{
-				displayName: 'VIN',
-				name: 'vin',
-				type: 'string',
-				required: true,
-				displayOptions: {
-					show: {
-						operation: ['recalls'],
-					},
-				},
-				default: '',
-				placeholder: '1C4JJXR64PW696340',
-				description: 'Vehicle Identification Number',
-			},
-
-			// ===== PLATE IMAGE RECOGNITION PARAMETERS =====
-			{
-				displayName: 'Image URL',
-				name: 'imageUrl',
-				type: 'string',
-				required: true,
-				displayOptions: {
-					show: {
+						resource: ['plate'],
 						operation: ['plateImageRecognition'],
 					},
 				},
 				default: '',
-				placeholder: 'https://api.carsxe.com/img/apis/plate_recognition.JPG',
+				placeholder: 'e.g. https://api.carsxe.com/img/apis/plate_recognition.JPG',
 				description: 'URL of the license plate image to analyze',
 			},
 
-			// ===== VIN OCR PARAMETERS =====
-			{
-				displayName: 'Image URL',
-				name: 'imageUrl',
-				type: 'string',
-				required: true,
-				displayOptions: {
-					show: {
-						operation: ['vinOcr'],
-					},
-				},
-				default: '',
-				placeholder: 'https://example.com/vin-image.png',
-				description: 'URL of the VIN image to extract text from',
-			},
-
-			// ===== YEAR MAKE MODEL PARAMETERS =====
-			{
-				displayName: 'Year',
-				name: 'year',
-				type: 'number',
-				required: true,
-				displayOptions: {
-					show: {
-						operation: ['yearMakeModel'],
-					},
-				},
-				default: 2023,
-				description: 'Vehicle year',
-			},
+			// ===== VEHICLE DATA PARAMETERS =====
 			{
 				displayName: 'Make',
 				name: 'make',
@@ -477,11 +341,12 @@ export class CarsXe implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
-						operation: ['yearMakeModel'],
+						resource: ['vehicle'],
+						operation: ['images', 'yearMakeModel'],
 					},
 				},
 				default: '',
-				placeholder: 'Toyota',
+				placeholder: 'e.g. BMW',
 				description: 'Vehicle make',
 			},
 			{
@@ -491,12 +356,28 @@ export class CarsXe implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
+						resource: ['vehicle'],
+						operation: ['images', 'yearMakeModel'],
+					},
+				},
+				default: '',
+				placeholder: 'e.g. X5',
+				description: 'Vehicle model',
+			},
+			{
+				displayName: 'Year',
+				name: 'year',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['vehicle'],
 						operation: ['yearMakeModel'],
 					},
 				},
 				default: '',
-				placeholder: 'Camry',
-				description: 'Vehicle model',
+				placeholder: 'e.g. 2012',
+				description: 'Vehicle year',
 			},
 			{
 				displayName: 'Additional Options',
@@ -506,6 +387,96 @@ export class CarsXe implements INodeType {
 				default: {},
 				displayOptions: {
 					show: {
+						resource: ['vehicle'],
+						operation: ['images'],
+					},
+				},
+				options: [
+					{
+						displayName: 'Angle',
+						name: 'angle',
+						type: 'options',
+						options: [
+							{ name: '3/4 Front', value: '3quarter' },
+							{ name: 'Front', value: 'front' },
+							{ name: 'Rear', value: 'rear' },
+							{ name: 'Side', value: 'side' },
+						],
+						default: 'front',
+						description: 'Image angle/view (optional)',
+					},
+					{
+						displayName: 'Color',
+						name: 'color',
+						type: 'color',
+						default: '',
+						placeholder: 'e.g. red',
+						description: 'Vehicle color (optional)',
+					},
+					{
+						displayName: 'License',
+						name: 'license',
+						type: 'boolean',
+						default: false,
+						description: 'Whether to include license plate in image (optional)',
+					},
+					{
+						displayName: 'Photo Type',
+						name: 'photoType',
+						type: 'options',
+						options: [
+							{ name: 'Real', value: 'real' },
+							{ name: 'Stock', value: 'stock' },
+						],
+						default: 'stock',
+						description: 'Type of photo - stock or real (optional)',
+					},
+					{
+						displayName: 'Size',
+						name: 'size',
+						type: 'options',
+						options: [
+							{ name: 'Large', value: 'large' },
+							{ name: 'Medium', value: 'medium' },
+							{ name: 'Small', value: 'small' },
+						],
+						default: 'medium',
+						description: 'Image size (optional)',
+					},
+					{
+						displayName: 'Transparent',
+						name: 'transparent',
+						type: 'boolean',
+						default: false,
+						description: 'Whether to return transparent background images (optional)',
+					},
+					{
+						displayName: 'Trim',
+						name: 'trim',
+						type: 'string',
+						default: '',
+						placeholder: 'e.g. SE',
+						description: 'Vehicle trim level (optional)',
+					},
+					{
+						displayName: 'Year',
+						name: 'year',
+						type: 'string',
+						default: '',
+						placeholder: 'e.g. 2019',
+						description: 'Vehicle year (optional)',
+					},
+				],
+			},
+			{
+				displayName: 'Additional Options',
+				name: 'additionalOptions',
+				type: 'collection',
+				placeholder: 'Add Option',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['vehicle'],
 						operation: ['yearMakeModel'],
 					},
 				},
@@ -515,13 +486,13 @@ export class CarsXe implements INodeType {
 						name: 'trim',
 						type: 'string',
 						default: '',
-						placeholder: 'XLE',
-						description: 'Vehicle trim level',
+						placeholder: 'e.g. Gran Turismo',
+						description: 'Vehicle trim level (optional)',
 					},
 				],
 			},
 
-			// ===== OBD CODES DECODER PARAMETERS =====
+			// ===== DIAGNOSTIC PARAMETERS =====
 			{
 				displayName: 'OBD Code',
 				name: 'code',
@@ -529,12 +500,28 @@ export class CarsXe implements INodeType {
 				required: true,
 				displayOptions: {
 					show: {
+						resource: ['diagnostic'],
 						operation: ['obdCodesDecoder'],
 					},
 				},
 				default: '',
-				placeholder: 'P0115',
-				description: 'OBD error/diagnostic code (e.g., P0420, P0115, P0171)',
+				placeholder: 'e.g. P0115',
+				description: 'OBD error/diagnostic code',
+			},
+			{
+				displayName: 'Upload URL',
+				name: 'uploadUrl',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['diagnostic'],
+						operation: ['vinOcr'],
+					},
+				},
+				default: '',
+				placeholder: 'e.g. https://api.carsxe.com/img/apis/plate_recognition.JPG',
+				description: 'URL of the VIN image to extract text from',
 			},
 		],
 	};
@@ -547,6 +534,7 @@ export class CarsXe implements INodeType {
 
 		for (let i = 0; i < items.length; i++) {
 			try {
+				const resource = this.getNodeParameter('resource', i) as string;
 				const operation = this.getNodeParameter('operation', i) as string;
 
 				let endpoint = '';
@@ -583,7 +571,8 @@ export class CarsXe implements INodeType {
 					case 'plateDecoder': {
 						endpoint = '/v2/platedecoder';
 						qs.plate = this.getNodeParameter('plate', i) as string;
-						qs.country = this.getNodeParameter('country', i) as string;
+						const country = this.getNodeParameter('country', i) as string;
+						if (country) qs.country = country;
 
 						const additionalOptions = this.getNodeParameter(
 							'additionalOptions',
@@ -626,7 +615,6 @@ export class CarsXe implements INodeType {
 						) as IDataObject;
 						if (additionalOptions.year) qs.year = additionalOptions.year;
 						if (additionalOptions.color) qs.color = additionalOptions.color;
-						if (additionalOptions.format) qs.format = additionalOptions.format;
 						if (additionalOptions.trim) qs.trim = additionalOptions.trim;
 						if (additionalOptions.transparent) qs.transparent = additionalOptions.transparent;
 						if (additionalOptions.angle) qs.angle = additionalOptions.angle;
@@ -645,22 +633,22 @@ export class CarsXe implements INodeType {
 					case 'plateImageRecognition': {
 						method = 'POST';
 						endpoint = '/platerecognition';
-						const imageUrl = this.getNodeParameter('imageUrl', i) as string;
-						body = { image_url: imageUrl };
+						const uploadUrl = this.getNodeParameter('uploadUrl', i) as string;
+						body = { upload_url: uploadUrl };
 						break;
 					}
 
 					case 'vinOcr': {
 						method = 'POST';
 						endpoint = '/v1/vinocr';
-						const imageUrl = this.getNodeParameter('imageUrl', i) as string;
-						body = { image_url: imageUrl };
+						const uploadUrl = this.getNodeParameter('uploadUrl', i) as string;
+						body = { upload_url: uploadUrl };
 						break;
 					}
 
 					case 'yearMakeModel': {
 						endpoint = '/v1/ymm';
-						qs.year = this.getNodeParameter('year', i) as number;
+						qs.year = this.getNodeParameter('year', i) as string;
 						qs.make = this.getNodeParameter('make', i) as string;
 						qs.model = this.getNodeParameter('model', i) as string;
 
@@ -680,23 +668,26 @@ export class CarsXe implements INodeType {
 					}
 
 					default:
-						throw new NodeOperationError(this.getNode(), `Unknown operation: ${operation}`, {
-							itemIndex: i,
-						});
+						throw new NodeOperationError(
+							this.getNode(),
+							`Unknown operation: ${operation} for resource: ${resource}`,
+							{ itemIndex: i },
+						);
 				}
 
-				// Make API request using httpRequest instead of deprecated request
+				// Make API request
 				const options: IHttpRequestOptions = {
 					method,
 					baseURL: 'https://api.carsxe.com',
 					url: endpoint,
 					json: true,
+					ignoreHttpStatusErrors: true,
+					returnFullResponse: true,
 				};
 
 				if (method === 'GET') {
 					options.qs = qs;
 				} else {
-					// For POST requests (image recognition endpoints)
 					options.url = `${endpoint}?key=${apiKey}&source=n8n`;
 					options.headers = {
 						'Content-Type': 'application/json',
@@ -704,23 +695,97 @@ export class CarsXe implements INodeType {
 					options.body = body;
 				}
 
-				const response = await this.helpers.httpRequest(options);
+				const fullResponse = await this.helpers.httpRequest(options);
+				const response = fullResponse.body;
+				const statusCode = fullResponse.statusCode;
 
-				// Handle response
-				if (Array.isArray(response)) {
-					returnData.push(...response.map((item) => item as IDataObject));
-				} else {
-					returnData.push(response as IDataObject);
+				// Handle HTTP error status codes (401, 403, 404, 500, etc.)
+				if (statusCode >= 400) {
+					const errorResponse = {
+						success: false,
+						statusCode,
+						error: response.error || response.message || `HTTP ${statusCode} Error`,
+						error_description:
+							response.error_description || response.details || response.message || '',
+						fullResponse: response,
+						_metadata: {
+							resource,
+							operation,
+							timestamp: new Date().toISOString(),
+							itemIndex: i,
+						},
+					};
+
+					if (this.continueOnFail()) {
+						returnData.push(errorResponse);
+						continue;
+					}
+
+					// Build detailed error message
+					const errorMessage = response.error || response.message || `HTTP ${statusCode} Error`;
+					const errorDetails = response.error_description || response.details || '';
+
+					throw new NodeOperationError(
+						this.getNode(),
+						`CarsXE API Error (${statusCode}): ${errorMessage}${errorDetails ? ' - ' + errorDetails : ''}`,
+						{
+							itemIndex: i,
+							description: `Full API Response:\n${JSON.stringify(response, null, 2)}`,
+						},
+					);
 				}
+
+				// Check if API returned success: false in response body
+				if (response && response.success === false) {
+					const errorResponse = {
+						...response,
+						_metadata: {
+							resource,
+							operation,
+							timestamp: new Date().toISOString(),
+							itemIndex: i,
+						},
+					};
+
+					if (this.continueOnFail()) {
+						returnData.push(errorResponse);
+						continue;
+					}
+
+					const errorMessage = response.error || response.message || 'API request failed';
+					const errorDetails = response.error_description || response.details || '';
+
+					throw new NodeOperationError(
+						this.getNode(),
+						`CarsXE API Error: ${errorMessage}${errorDetails ? ' - ' + errorDetails : ''}`,
+						{
+							itemIndex: i,
+							description: `Full API Response:\n${JSON.stringify(response, null, 2)}`,
+						},
+					);
+				}
+
+				// Success - return the whole response
+				returnData.push(response as IDataObject);
 			} catch (error) {
+				// Network errors or other exceptions
 				if (this.continueOnFail()) {
 					returnData.push({
-						error: error.message,
+						success: false,
+						error: true,
+						errorType: error.constructor.name,
+						errorMessage: error.message,
+						statusCode: error.response?.status || error.statusCode || 'unknown',
+						responseData: error.response?.data || null,
+						resource: this.getNodeParameter('resource', i, 'unknown') as string,
+						operation: this.getNodeParameter('operation', i, 'unknown') as string,
+						timestamp: new Date().toISOString(),
 						itemIndex: i,
 					});
 					continue;
 				}
-				throw new NodeOperationError(this.getNode(), error, { itemIndex: i });
+
+				throw error;
 			}
 		}
 

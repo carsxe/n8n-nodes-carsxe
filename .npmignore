@@ -1,0 +1,43 @@
+# Source files
+nodes/**/*.ts
+credentials/**/*.ts
+!nodes/**/*.d.ts
+!credentials/**/*.d.ts
+
+# Keep only CarsXE in dist
+dist/nodes/Example/
+dist/nodes/GithubIssues/
+dist/credentials/GithubIssuesApi.*
+dist/credentials/GithubIssuesOAuth2Api.*
+
+# Config files
+tsconfig.json
+.eslintrc*
+eslint.config.mjs
+.prettierrc.js
+gulpfile.js
+
+# Git
+.git
+.gitignore
+.github/
+
+# IDE
+.vscode/
+.idea/
+
+# Docs (keep README and LICENSE)
+README_TEMPLATE.md
+CODE_OF_CONDUCT.md
+CHANGELOG.md
+
+# Node
+node_modules/
+npm-debug.log
+*.log
+
+# Build
+*.tsbuildinfo
+
+# Icons source (they're copied to dist)
+icons/

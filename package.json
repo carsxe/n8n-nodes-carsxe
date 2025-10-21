@@ -1,50 +1,63 @@
 {
-	"name": "n8n-nodes-<...>",
-	"version": "0.1.0",
-	"description": "",
-	"license": "MIT",
-	"homepage": "",
+	"name": "n8n-nodes-carsxe",
+	"version": "1.0.0",
+	"description": "n8n node for CarsXE API",
 	"keywords": [
-		"n8n-community-node-package"
+		"n8n-community-node-package",
+		"n8n",
+		"carsxe",
+		"vehicles",
+		"api",
+		"specs",
+		"vin",
+		"decoder",
+		"international vehicles",
+		"automotive"
 	],
+	"license": "MIT",
+	"homepage": "https://api.carsxe.com/",
 	"author": {
-		"name": "",
-		"email": ""
+		"name": "CarsXE",
+		"email": "devops@carsxe.com",
+		"url": "https://api.carsxe.com/"
 	},
 	"repository": {
 		"type": "git",
-		"url": "https://github.com/<...>/n8n-nodes-<...>.git"
+		"url": "https://github.com/carsxe/n8n-nodes-carsxe.git"
 	},
+	"main": "index.js",
 	"scripts": {
-		"build": "n8n-node build",
-		"build:watch": "tsc --watch",
-		"dev": "n8n-node dev",
-		"lint": "n8n-node lint",
-		"lint:fix": "n8n-node lint --fix",
-		"release": "n8n-node release",
-		"prepublishOnly": "n8n-node prerelease"
+		"build": "tsc && gulp build:icons",
+		"dev": "tsc --watch",
+		"format": "prettier nodes credentials --write",
+		"lint": "eslint nodes credentials package.json",
+		"lintfix": "eslint nodes credentials package.json --fix",
+		"prepublishOnly": "npm run build && npm run lint -c .eslintrc.prepublish.js nodes credentials package.json"
 	},
 	"files": [
-		"dist"
+		"dist/credentials/CarsXEApi.credentials.js",
+		"dist/nodes/CarsXE/",
+		"LICENSE.md",
+		"README.md"
 	],
 	"n8n": {
 		"n8nNodesApiVersion": 1,
-		"strict": true,
 		"credentials": [
-			"dist/credentials/GithubIssuesApi.credentials.js",
-			"dist/credentials/GithubIssuesOAuth2Api.credentials.js"
+			"dist/credentials/CarsXEApi.credentials.js"
 		],
 		"nodes": [
-			"dist/nodes/GithubIssues/GithubIssues.node.js",
-			"dist/nodes/Example/Example.node.js"
+			"dist/nodes/CarsXE/CarsXE.node.js"
 		]
 	},
 	"devDependencies": {
-		"@n8n/node-cli": "*",
-		"eslint": "9.32.0",
-		"prettier": "3.6.2",
-		"release-it": "^19.0.4",
-		"typescript": "5.9.2"
+		"@typescript-eslint/parser": "^8.46.1",
+		"@typescript-eslint/eslint-plugin": "^8.46.1",
+		"eslint": "^9.17.0",
+		"eslint-plugin-n8n-nodes-base": "^1.16.1",
+		"gulp": "^4.0.2",
+		"n8n-workflow": "^1.68.0",
+		"prettier": "^3.4.2",
+		"typescript": "^5.7.2"
 	},
 	"peerDependencies": {
 		"n8n-workflow": "*"

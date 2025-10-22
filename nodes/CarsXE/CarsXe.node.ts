@@ -70,34 +70,34 @@ export class CarsXe implements INodeType {
 				},
 				options: [
 					{
-						name: 'Decode International VIN',
-						value: 'intVinDecoder',
-						action: 'Decode an international VIN',
-						description: 'Decode VIN with worldwide support',
-					},
-					{
-						name: 'Get History Report',
+						name: 'Get a Vehicle History Report',
 						value: 'history',
 						action: 'Get a vehicle history report',
 						description: 'Retrieve vehicle history',
 					},
 					{
-						name: 'Get Market Value',
+						name: 'Get a Vehicle Market Value',
 						value: 'marketValue',
-						action: 'Get a market value estimate',
+						action: 'Get a vehicle market value',
 						description: 'Estimate vehicle market value based on VIN',
 					},
 					{
-						name: 'Get Safety Recalls',
+						name: 'Get International VIN Specs',
+						value: 'intVinDecoder',
+						action: 'Get international VIN specs',
+						description: 'Decode VIN with worldwide support',
+					},
+					{
+						name: 'Get Vehicle Safety Recalls',
 						value: 'recalls',
-						action: 'Get safety recall information',
+						action: 'Get vehicle safety recalls',
 						description: 'Get safety recall data for a VIN',
 					},
 					{
-						name: 'Get Specs',
+						name: 'Get VIN Specs',
 						value: 'specs',
-						action: 'Get vehicle specifications',
-						description: 'Retrieve full vehicle specifications',
+						action: 'Get VIN specs',
+						description: 'Decode VIN and get full vehicle specifications',
 					},
 				],
 				default: 'specs',
@@ -116,16 +116,16 @@ export class CarsXe implements INodeType {
 				},
 				options: [
 					{
-						name: 'Decode License Plate',
-						value: 'plateDecoder',
-						action: 'Decode a license plate',
-						description: 'Decode license plate info (plate, country)',
+						name: 'Get a License Plate From Image',
+						value: 'plateImageRecognition',
+						action: 'Get a license plate from image',
+						description: 'Read and decode plates from images',
 					},
 					{
-						name: 'Recognize Plate From Image',
-						value: 'plateImageRecognition',
-						action: 'Recognize a license plate from image',
-						description: 'Read and decode plates from images',
+						name: 'Get License Plate Specs',
+						value: 'plateDecoder',
+						action: 'Get license plate specs',
+						description: 'Decode license plate info (plate, country)',
 					},
 				],
 				default: 'plateDecoder',
@@ -144,15 +144,15 @@ export class CarsXe implements INodeType {
 				},
 				options: [
 					{
-						name: 'Get Images',
+						name: 'Get Vehicle Images',
 						value: 'images',
 						action: 'Get vehicle images',
 						description: 'Fetch images by make, model, year, trim',
 					},
 					{
-						name: 'Query by Year/Make/Model',
+						name: 'Get Vehicle Specs by Year/Make/Model',
 						value: 'yearMakeModel',
-						action: 'Query a vehicle by year make and model',
+						action: 'Get vehicle specs by year make and model',
 						description: 'Query vehicle by year, make, model and trim (optional)',
 					},
 				],
@@ -172,16 +172,16 @@ export class CarsXe implements INodeType {
 				},
 				options: [
 					{
-						name: 'Decode OBD Code',
-						value: 'obdCodesDecoder',
-						action: 'Decode an OBD diagnostic code',
-						description: 'Decode OBD error/diagnostic codes',
+						name: 'Get a VIN From Image',
+						value: 'vinOcr',
+						action: 'Get a VIN from image',
+						description: 'Extract VINs from images using OCR',
 					},
 					{
-						name: 'Extract VIN From Image',
-						value: 'vinOcr',
-						action: 'Extract a VIN from image using OCR',
-						description: 'Extract VINs from images using OCR',
+						name: 'Get OBD Code Specs',
+						value: 'obdCodesDecoder',
+						action: 'Get OBD code specs',
+						description: 'Decode OBD error/diagnostic codes',
 					},
 				],
 				default: 'obdCodesDecoder',
@@ -273,18 +273,19 @@ export class CarsXe implements INodeType {
 				description: 'License plate number',
 			},
 			{
-				displayName: 'Country',
-				name: 'country',
+				displayName: 'State',
+				name: 'state',
 				type: 'string',
-				default: 'US',
+				required: true,
 				displayOptions: {
 					show: {
 						resource: ['plate'],
 						operation: ['plateDecoder'],
 					},
 				},
-				placeholder: 'e.g. US',
-				description: 'Country code (always required except for US where it defaults to US)',
+				default: '',
+				placeholder: 'e.g. CA',
+				description: 'State/Province code (required for US, AU, CA)',
 			},
 			{
 				displayName: 'Additional Options',
@@ -300,20 +301,20 @@ export class CarsXe implements INodeType {
 				},
 				options: [
 					{
+						displayName: 'Country',
+						name: 'country',
+						type: 'string',
+						default: 'US',
+						placeholder: 'e.g. US',
+						description: 'Country code (US, CA, AU, UK, PK) - defaults to US',
+					},
+					{
 						displayName: 'District',
 						name: 'district',
 						type: 'string',
 						default: '',
 						placeholder: 'e.g. Islamabad',
 						description: 'District (required for Pakistan)',
-					},
-					{
-						displayName: 'State',
-						name: 'state',
-						type: 'string',
-						default: '',
-						placeholder: 'e.g. CA',
-						description: 'State/Province code (required for US, AU, CA, etc.)',
 					},
 				],
 			},
@@ -397,66 +398,90 @@ export class CarsXe implements INodeType {
 						name: 'angle',
 						type: 'options',
 						options: [
-							{ name: '3/4 Front', value: '3quarter' },
 							{ name: 'Front', value: 'front' },
-							{ name: 'Rear', value: 'rear' },
 							{ name: 'Side', value: 'side' },
+							{ name: 'Back', value: 'back' },
 						],
 						default: 'front',
-						description: 'Image angle/view (optional)',
+						description: 'The angle to show the car in',
 					},
 					{
 						displayName: 'Color',
 						name: 'color',
-						type: 'color',
+						// eslint-disable-next-line n8n-nodes-base/node-param-color-type-unused
+						type: 'string',
 						default: '',
 						placeholder: 'e.g. red',
-						description: 'Vehicle color (optional)',
+						description: 'The vehicle color',
+					},
+					{
+						displayName: 'Format',
+						name: 'format',
+						type: 'options',
+						options: [
+							{ name: 'JSON', value: 'json' },
+							{ name: 'XML', value: 'xml' },
+						],
+						default: 'json',
+						description: 'The format of the response',
 					},
 					{
 						displayName: 'License',
 						name: 'license',
-						type: 'boolean',
-						default: false,
-						description: 'Whether to include license plate in image (optional)',
+						type: 'options',
+						options: [
+							{ name: 'All', value: '' },
+							{ name: 'Modify', value: 'Modify' },
+							{ name: 'Modify Commercially', value: 'ModifyCommercially' },
+							{ name: 'Public', value: 'Public' },
+							{ name: 'Share', value: 'Share' },
+							{ name: 'Share Commercially', value: 'ShareCommercially' },
+						],
+						default: '',
+						description: 'Filter images by license type. Leave blank to return all images.',
 					},
 					{
 						displayName: 'Photo Type',
 						name: 'photoType',
 						type: 'options',
 						options: [
-							{ name: 'Real', value: 'real' },
-							{ name: 'Stock', value: 'stock' },
+							{ name: 'Exterior', value: 'exterior' },
+							{ name: 'Interior', value: 'interior' },
+							{ name: 'Engine', value: 'engine' },
 						],
-						default: 'stock',
-						description: 'Type of photo - stock or real (optional)',
+						default: 'exterior',
+						description:
+							'Request images of either interior, exterior or engine. Can only be used with year, make, model and trim.',
 					},
 					{
 						displayName: 'Size',
 						name: 'size',
 						type: 'options',
 						options: [
-							{ name: 'Large', value: 'large' },
-							{ name: 'Medium', value: 'medium' },
-							{ name: 'Small', value: 'small' },
+							{ name: 'All', value: 'All' },
+							{ name: 'Large', value: 'Large' },
+							{ name: 'Medium', value: 'Medium' },
+							{ name: 'Small', value: 'Small' },
+							{ name: 'Wallpaper', value: 'Wallpaper' },
 						],
-						default: 'medium',
-						description: 'Image size (optional)',
+						default: 'All',
+						description: 'The image size. Defaults to all sizes.',
 					},
 					{
 						displayName: 'Transparent',
 						name: 'transparent',
 						type: 'boolean',
-						default: false,
-						description: 'Whether to return transparent background images (optional)',
+						default: true,
+						description:
+							'Whether to prioritize images with transparent background. Defaults to true.',
 					},
 					{
 						displayName: 'Trim',
 						name: 'trim',
 						type: 'string',
 						default: '',
-						placeholder: 'e.g. SE',
-						description: 'Vehicle trim level (optional)',
+						placeholder: 'e.g. xDrive35i',
+						description: 'The vehicle trim level',
 					},
 					{
 						displayName: 'Year',
@@ -464,7 +489,7 @@ export class CarsXe implements INodeType {
 						type: 'string',
 						default: '',
 						placeholder: 'e.g. 2019',
-						description: 'Vehicle year (optional)',
+						description: 'The vehicle year',
 					},
 				],
 			},
@@ -571,15 +596,17 @@ export class CarsXe implements INodeType {
 					case 'plateDecoder': {
 						endpoint = '/v2/platedecoder';
 						qs.plate = this.getNodeParameter('plate', i) as string;
-						const country = this.getNodeParameter('country', i) as string;
-						if (country) qs.country = country;
+						qs.state = this.getNodeParameter('state', i) as string;
 
 						const additionalOptions = this.getNodeParameter(
 							'additionalOptions',
 							i,
 							{},
 						) as IDataObject;
-						if (additionalOptions.state) qs.state = additionalOptions.state;
+
+						// Country defaults to US if not provided
+						qs.country = (additionalOptions.country as string) || 'US';
+
 						if (additionalOptions.district) qs.district = additionalOptions.district;
 						break;
 					}

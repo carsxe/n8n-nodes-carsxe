@@ -36,11 +36,10 @@ export class CarsXEApi implements ICredentialType {
 	test: ICredentialTestRequest = {
 		request: {
 			baseURL: 'https://api.carsxe.com',
-			url: '/specs',
+			url: '/v1/auth/validate',
 			method: 'GET',
 			qs: {
 				key: '={{$credentials.apiKey}}',
-				vin: 'WBAFR7C57CC811956',
 			},
 		},
 	};

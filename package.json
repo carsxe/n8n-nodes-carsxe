@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-carsxe",
-	"version": "1.0.4",
+	"version": "1.0.5",
 	"description": "n8n node for CarsXE API",
 	"keywords": [
 		"n8n-community-node-package",
@@ -46,7 +46,7 @@
 			"dist/credentials/CarsXEApi.credentials.js"
 		],
 		"nodes": [
-			"dist/nodes/CarsXE/CarsXE.node.js"
+			"dist/nodes/CarsXE/CarsXe.node.js"
 		]
 	},
 	"devDependencies": {

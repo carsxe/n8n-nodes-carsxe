@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-carsxe",
-	"version": "1.0.5",
+	"version": "1.0.6",
 	"description": "n8n node for CarsXE API",
 	"keywords": [
 		"n8n-community-node-package",
@@ -35,7 +35,7 @@
 		"prepublishOnly": "npm run build && npm run lint -c .eslintrc.prepublish.js nodes credentials package.json"
 	},
 	"files": [
-		"dist/credentials/CarsXEApi.credentials.js",
+		"dist/credentials/",
 		"dist/nodes/CarsXE/",
 		"LICENSE.md",
 		"README.md"

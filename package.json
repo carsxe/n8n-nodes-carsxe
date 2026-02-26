@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-carsxe",
-	"version": "1.0.6",
+	"version": "1.0.7",
 	"description": "n8n node for CarsXE API",
 	"keywords": [
 		"n8n-community-node-package",
@@ -50,16 +50,21 @@
 		]
 	},
 	"devDependencies": {
-		"@typescript-eslint/parser": "^8.46.1",
+		"@n8n/node-cli": "^0.1.0",
+		"@types/estree": "^1.0.8",
 		"@typescript-eslint/eslint-plugin": "^8.46.1",
+		"@typescript-eslint/parser": "^8.46.1",
 		"eslint": "^9.17.0",
+		"eslint-import-resolver-typescript": "^4.4.4",
 		"eslint-plugin-n8n-nodes-base": "^1.16.1",
-		"gulp": "^4.0.2",
-		"n8n-workflow": "^1.68.0",
+		"gulp": "^5.0.1",
+		"n8n-core": "^1.122.16",
+		"n8n-workflow": "^1.120.9",
 		"prettier": "^3.4.2",
 		"typescript": "^5.7.2"
 	},
 	"peerDependencies": {
+		"n8n-core": "*",
 		"n8n-workflow": "*"
 	}
 }

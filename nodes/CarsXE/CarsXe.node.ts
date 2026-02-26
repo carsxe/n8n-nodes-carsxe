@@ -6,6 +6,7 @@ import {
 	IDataObject,
 	NodeOperationError,
 	IHttpRequestOptions,
+	GenericValue,
 } from 'n8n-workflow';
 
 export class CarsXe implements INodeType {
@@ -553,7 +554,7 @@ export class CarsXe implements INodeType {
 
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
-		const returnData: IDataObject[] = [];
+		const returnData: INodeExecutionData[] = [];
 		const credentials = await this.getCredentials('carsXEApi');
 		const apiKey = credentials.apiKey as string;
 
@@ -744,7 +745,10 @@ export class CarsXe implements INodeType {
 					};
 
 					if (this.continueOnFail()) {
-						returnData.push(errorResponse);
+						returnData.push({
+							json: errorResponse as IDataObject,
+							pairedItem: { item: i },
+						});
 						continue;
 					}
 
@@ -775,7 +779,10 @@ export class CarsXe implements INodeType {
 					};
 
 					if (this.continueOnFail()) {
-						returnData.push(errorResponse);
+						returnData.push({
+							json: errorResponse as IDataObject,
+							pairedItem: { item: i },
+						});
 						continue;
 					}
 
@@ -793,29 +800,68 @@ export class CarsXe implements INodeType {
 				}
 
 				// Success - return the whole response
-				returnData.push(response as IDataObject);
-			} catch (error) {
-				// Network errors or other exceptions
+				returnData.push({
+					json: response as IDataObject,
+					pairedItem: { item: i },
+				});
+			} catch (error: unknown) {
 				if (this.continueOnFail()) {
-					returnData.push({
+					let errorType = 'Error';
+					let errorMessage = 'Unknown error';
+					let statusCode: number | string = 'unknown';
+					let responseData: unknown = null;
+
+					if (error instanceof Error) {
+						errorType = error.constructor.name;
+						errorMessage = error.message;
+					}
+
+					// Narrow axios-style error shape safely
+					if (typeof error === 'object' && error !== null && 'response' in error) {
+						const errObj = error as {
+							response?: {
+								status?: number;
+								data?: unknown;
+							};
+							statusCode?: number;
+						};
+
+						statusCode = errObj.response?.status ?? errObj.statusCode ?? 'unknown';
+
+						responseData = errObj.response?.data ?? null;
+					}
+
+					let safeResponseData: IDataObject | IDataObject[] | GenericValue | GenericValue[] | null =
+						null;
+
+					if (responseData && typeof responseData === 'object') {
+						safeResponseData = responseData as IDataObject; // آمن لأنه object
+					} else {
+						safeResponseData = { value: responseData } as IDataObject; // لو مش object
+					}
+
+					const errorJson: IDataObject = {
 						success: false,
 						error: true,
-						errorType: error.constructor.name,
-						errorMessage: error.message,
-						statusCode: error.response?.status || error.statusCode || 'unknown',
-						responseData: error.response?.data || null,
+						errorType,
+						errorMessage,
+						statusCode,
+						responseData: safeResponseData,
 						resource: this.getNodeParameter('resource', i, 'unknown') as string,
 						operation: this.getNodeParameter('operation', i, 'unknown') as string,
 						timestamp: new Date().toISOString(),
 						itemIndex: i,
+					};
+
+					returnData.push({
+						json: errorJson,
+						pairedItem: { item: i },
 					});
 					continue;
 				}
-
 				throw error;
 			}
 		}
-
-		return [this.helpers.returnJsonArray(returnData)];
+		return [returnData];
 	}
 }

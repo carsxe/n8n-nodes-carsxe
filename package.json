@@ -1,6 +1,6 @@
 {
 	"name": "n8n-nodes-carsxe",
-	"version": "1.0.7",
+	"version": "1.0.8",
 	"description": "n8n node for CarsXE API",
 	"keywords": [
 		"n8n-community-node-package",
@@ -64,7 +64,6 @@
 		"typescript": "^5.7.2"
 	},
 	"peerDependencies": {
-		"n8n-core": "*",
-		"n8n-workflow": "*"
+		"n8n-core": "*"
 	}
 }

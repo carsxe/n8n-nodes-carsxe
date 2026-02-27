@@ -835,9 +835,9 @@ export class CarsXe implements INodeType {
 						null;
 
 					if (responseData && typeof responseData === 'object') {
-						safeResponseData = responseData as IDataObject; // آمن لأنه object
+						safeResponseData = responseData as IDataObject;
 					} else {
-						safeResponseData = { value: responseData } as IDataObject; // لو مش object
+						safeResponseData = { value: responseData } as IDataObject;
 					}
 
 					const errorJson: IDataObject = {

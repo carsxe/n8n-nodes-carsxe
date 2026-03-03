@@ -71,6 +71,12 @@ export class CarsXe implements INodeType {
 				},
 				options: [
 					{
+						name: 'Check Liens and Theft Records',
+						value: 'lienTheft',
+						action: 'Check liens and theft records',
+						description: 'Check for active liens and theft records on a vehicle',
+					},
+					{
 						name: 'Get a Vehicle History Report',
 						value: 'history',
 						action: 'Get a vehicle history report',
@@ -197,7 +203,7 @@ export class CarsXe implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['vin'],
-						operation: ['specs', 'intVinDecoder', 'history', 'marketValue', 'recalls'],
+						operation: ['specs', 'intVinDecoder', 'history', 'lienTheft', 'marketValue', 'recalls'],
 					},
 				},
 				default: '',
@@ -627,6 +633,12 @@ export class CarsXe implements INodeType {
 
 					case 'history': {
 						endpoint = '/history';
+						qs.vin = this.getNodeParameter('vin', i) as string;
+						break;
+					}
+
+					case 'lienTheft': {
+						endpoint = '/v1/lien-theft';
 						qs.vin = this.getNodeParameter('vin', i) as string;
 						break;
 					}

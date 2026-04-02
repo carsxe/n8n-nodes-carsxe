@@ -278,7 +278,7 @@ export class CarsXe implements INodeType {
 							{ name: 'Average', value: 'average' },
 							{ name: 'Rough', value: 'rough' },
 						],
-						default: '',
+						default: 'average',
 						description: 'Overall condition of the vehicle (optional)',
 					},
 				],

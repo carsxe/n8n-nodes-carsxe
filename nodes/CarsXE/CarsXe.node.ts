@@ -258,7 +258,28 @@ export class CarsXe implements INodeType {
 						type: 'string',
 						default: '',
 						placeholder: 'e.g. CA',
-						description: 'State code for more accurate market valuation (optional)',
+						description: 'US state code for regional pricing adjustments (optional)',
+					},
+					{
+						displayName: 'Mileage',
+						name: 'mileage',
+						type: 'number',
+						default: '',
+						placeholder: 'e.g. 45000',
+						description: 'Current mileage of the vehicle used to adjust the market value (optional)',
+					},
+					{
+						displayName: 'Condition',
+						name: 'condition',
+						type: 'options',
+						options: [
+							{ name: 'Excellent', value: 'excellent' },
+							{ name: 'Clean', value: 'clean' },
+							{ name: 'Average', value: 'average' },
+							{ name: 'Rough', value: 'rough' },
+						],
+						default: '',
+						description: 'Overall condition of the vehicle (optional)',
 					},
 				],
 			},
@@ -628,6 +649,8 @@ export class CarsXe implements INodeType {
 							{},
 						) as IDataObject;
 						if (additionalOptions.state) qs.state = additionalOptions.state;
+						if (additionalOptions.mileage) qs.mileage = additionalOptions.mileage;
+						if (additionalOptions.condition) qs.condition = additionalOptions.condition;
 						break;
 					}
 

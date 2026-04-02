@@ -13,7 +13,7 @@
 - **VIN Decoding** - Decode US & International VINs with full specifications
 - **License Plate Lookup** - Multi-country plate decoder (US, CA, AU, UK, PK)
 - **Vehicle History** - Ownership records and accident history
-- **Market Values** - Real-time vehicle valuations
+- **Market Values** - Real-time vehicle valuations with optional state, mileage, and condition adjustments
 - **Safety Recalls** - Check manufacturer recalls
 - **Vehicle Images** - Fetch professional vehicle photos
 - **OBD Codes** - Decode diagnostic trouble codes
@@ -71,7 +71,7 @@ docker run -d \
 - **Decode VIN** - Full vehicle specifications
 - **Decode International VIN** - Worldwide VIN support
 - **Get History Report** - Ownership & accident history
-- **Get Market Value** - Current market valuation
+- **Get Market Value** - Current market valuation (optional: state, mileage, condition)
 - **Get Safety Recalls** - Manufacturer recalls
 
 ### License Plate Operations

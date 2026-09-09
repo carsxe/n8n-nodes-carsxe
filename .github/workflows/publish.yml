@@ -93,12 +93,17 @@ jobs:
         # Publishes to npm with a provenance attestation (requires id-token: write above).
         # Lint and build run automatically as part of the release process.
         #
-        # Option A (OIDC): leave NPM_TOKEN unset — the token step is skipped and
-        #   npm uses the OIDC exchange instead.
-        # Option B (token): set NPM_TOKEN in repo secrets — it is written to
-        #   .npmrc here before publishing.
+        # setup-node with registry-url writes `_authToken=${NODE_AUTH_TOKEN}` and
+        # injects a placeholder NODE_AUTH_TOKEN unless this step overrides it.
+        # Option A (OIDC): leave NPM_TOKEN unset — drop the placeholder so npm
+        #   can use the OIDC exchange instead.
+        # Option B (token): set NPM_TOKEN in repo secrets — NODE_AUTH_TOKEN is
+        #   what npm expands from .npmrc during publish.
         run: |
-          [ -n "$NPM_TOKEN" ] && npm config set //registry.npmjs.org/:_authToken "$NPM_TOKEN"
+          if [ -z "$NPM_TOKEN" ]; then
+            unset NODE_AUTH_TOKEN
+          fi
           npm run release
         env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}

@@ -14,7 +14,10 @@
 - **License Plate Lookup** - Multi-country plate decoder (US, CA, AU, UK, PK)
 - **Vehicle History** - Ownership records and accident history
 - **Market Values** - Real-time vehicle valuations with optional state, mileage, and condition adjustments
-- **Safety Recalls** - Check manufacturer recalls
+- **Safety Recalls** - Check manufacturer recalls by VIN or year/make/model
+- **Recalls Batch** - Submit, poll, and download bulk VIN recall checks
+- **YMM Options** - Populate year, make, model, and variant dropdowns
+- **Ownership** - Enterprise lookups by VIN, person, address, or ZIP
 - **Vehicle Images** - Fetch professional vehicle photos
 - **OBD Codes** - Decode diagnostic trouble codes
 - **OCR Recognition** - Extract VINs and plates from images
@@ -83,6 +86,22 @@ docker run -d \
 
 - **Get Images** - Professional vehicle photos
 - **Query by Year/Make/Model** - Search by attributes
+- **Get Safety Recalls by Year/Make/Model** - Recalls without a VIN
+- **Get YMM Options** - Years, makes, models, trims, or variants
+
+### Recalls Batch Operations
+
+- **Submit Batch** - Queue up to 10,000 VINs (JSON, CSV, or CSV URL)
+- **Get Status** - Poll batch progress by `batchId`
+- **Get Results** - Fetch completed results as JSON
+- **Download Results** - Download completed results as CSV
+
+### Ownership Operations (Enterprise)
+
+- **Get by VIN** - Registered owner(s) for a vehicle
+- **Get by Person** - Contact details from name + address
+- **Get by Address** - Residents at a street address
+- **Get by ZIP** - Paginated people search with optional filters
 
 ### Diagnostic Operations
 

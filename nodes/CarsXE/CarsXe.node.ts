@@ -47,6 +47,14 @@ export class CarsXe implements INodeType {
 						value: 'plate',
 					},
 					{
+						name: 'Ownership',
+						value: 'ownership',
+					},
+					{
+						name: 'Recalls Batch',
+						value: 'recallsBatch',
+					},
+					{
 						name: 'Vehicle Data',
 						value: 'vehicle',
 					},
@@ -151,6 +159,12 @@ export class CarsXe implements INodeType {
 				},
 				options: [
 					{
+						name: 'Get Safety Recalls by Year/Make/Model',
+						value: 'recallsYmm',
+						action: 'Get safety recalls by year make and model',
+						description: 'Get safety recall data by year, make, and model (no VIN required)',
+					},
+					{
 						name: 'Get Vehicle Images',
 						value: 'images',
 						action: 'Get vehicle images',
@@ -161,6 +175,13 @@ export class CarsXe implements INodeType {
 						value: 'yearMakeModel',
 						action: 'Get vehicle specs by year make and model',
 						description: 'Query vehicle by year, make, model and trim (optional)',
+					},
+					{
+						name: 'Get YMM Options',
+						value: 'ymmOptions',
+						action: 'Get year make model options',
+						description:
+							'List years, makes, models, trims, or variants for cascading dropdowns',
 					},
 				],
 				default: 'images',
@@ -192,6 +213,86 @@ export class CarsXe implements INodeType {
 					},
 				],
 				default: 'obdCodesDecoder',
+			},
+
+			// ===== RECALLS BATCH OPERATIONS (Alphabetically sorted) =====
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['recallsBatch'],
+					},
+				},
+				options: [
+					{
+						name: 'Download Results',
+						value: 'recallsBatchDownload',
+						action: 'Download recalls batch results',
+						description: 'Download completed batch recall results as CSV',
+					},
+					{
+						name: 'Get Results',
+						value: 'recallsBatchResults',
+						action: 'Get recalls batch results',
+						description: 'Retrieve completed batch recall results as JSON',
+					},
+					{
+						name: 'Get Status',
+						value: 'recallsBatchStatus',
+						action: 'Get recalls batch status',
+						description: 'Check processing status for a recall batch',
+					},
+					{
+						name: 'Submit Batch',
+						value: 'recallsBatchSubmit',
+						action: 'Submit a recalls batch',
+						description: 'Submit up to 10,000 VINs for asynchronous recall checking',
+					},
+				],
+				default: 'recallsBatchSubmit',
+			},
+
+			// ===== OWNERSHIP OPERATIONS (Alphabetically sorted) =====
+			{
+				displayName: 'Operation',
+				name: 'operation',
+				type: 'options',
+				noDataExpression: true,
+				displayOptions: {
+					show: {
+						resource: ['ownership'],
+					},
+				},
+				options: [
+					{
+						name: 'Get by Address',
+						value: 'ownershipAddress',
+						action: 'Get ownership by address',
+						description: 'Find residents and vehicles linked to a street address (Enterprise)',
+					},
+					{
+						name: 'Get by Person',
+						value: 'ownershipPerson',
+						action: 'Get ownership by person',
+						description: 'Look up contact details and vehicles for a name and address (Enterprise)',
+					},
+					{
+						name: 'Get by VIN',
+						value: 'ownershipVin',
+						action: 'Get ownership by VIN',
+						description: 'Look up registered owner(s) for a VIN (Enterprise)',
+					},
+					{
+						name: 'Get by ZIP',
+						value: 'ownershipZip',
+						action: 'Get ownership by ZIP',
+						description: 'Search people in a ZIP code with optional filters (Enterprise)',
+					},
+				],
+				default: 'ownershipVin',
 			},
 
 			// ===== VIN PARAMETERS =====
@@ -371,7 +472,7 @@ export class CarsXe implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['vehicle'],
-						operation: ['images', 'yearMakeModel'],
+						operation: ['images', 'yearMakeModel', 'recallsYmm'],
 					},
 				},
 				default: '',
@@ -386,7 +487,7 @@ export class CarsXe implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['vehicle'],
-						operation: ['images', 'yearMakeModel'],
+						operation: ['images', 'yearMakeModel', 'recallsYmm'],
 					},
 				},
 				default: '',
@@ -401,7 +502,7 @@ export class CarsXe implements INodeType {
 				displayOptions: {
 					show: {
 						resource: ['vehicle'],
-						operation: ['yearMakeModel'],
+						operation: ['yearMakeModel', 'recallsYmm'],
 					},
 				},
 				default: '',
@@ -544,6 +645,378 @@ export class CarsXe implements INodeType {
 					},
 				],
 			},
+			{
+				displayName: 'Additional Options',
+				name: 'additionalOptions',
+				type: 'collection',
+				placeholder: 'Add Option',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['vehicle'],
+						operation: ['ymmOptions'],
+					},
+				},
+				options: [
+					{
+						displayName: 'Dimension',
+						name: 'dimension',
+						type: 'options',
+						options: [
+							{ name: 'Makes', value: 'makes' },
+							{ name: 'Models', value: 'models' },
+							{ name: 'Trims', value: 'trims' },
+							{ name: 'Variants', value: 'variants' },
+							{ name: 'Years', value: 'years' },
+						],
+						default: 'years',
+						description:
+							'Which list to return. Omit all filters to list years; add year/make/model for the next layer.',
+					},
+					{
+						displayName: 'Make',
+						name: 'make',
+						type: 'string',
+						default: '',
+						placeholder: 'e.g. Toyota',
+						description: 'Filter by manufacturer (required for models)',
+					},
+					{
+						displayName: 'Model',
+						name: 'model',
+						type: 'string',
+						default: '',
+						placeholder: 'e.g. Camry',
+						description: 'Filter by model (required for trims; usually required for variants)',
+					},
+					{
+						displayName: 'Trim',
+						name: 'trim',
+						type: 'string',
+						default: '',
+						placeholder: 'e.g. XLE',
+						description: 'Optional substring filter on trim/variant names',
+					},
+					{
+						displayName: 'Year',
+						name: 'year',
+						type: 'string',
+						default: '',
+						placeholder: 'e.g. 2026',
+						description: 'Filter by model year',
+					},
+				],
+			},
+
+			// ===== RECALLS BATCH PARAMETERS =====
+			{
+				displayName: 'VINs',
+				name: 'vins',
+				type: 'string',
+				typeOptions: {
+					rows: 5,
+				},
+				displayOptions: {
+					show: {
+						resource: ['recallsBatch'],
+						operation: ['recallsBatchSubmit'],
+					},
+				},
+				default: '',
+				placeholder: 'e.g. 1HGBH41JXMN109186\n5YJSA1E26HF000001',
+				description:
+					'VINs to check (one per line or comma-separated). Provide VINs, CSV, or CSV URL — at least one is required.',
+			},
+			{
+				displayName: 'Additional Options',
+				name: 'additionalOptions',
+				type: 'collection',
+				placeholder: 'Add Option',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['recallsBatch'],
+						operation: ['recallsBatchSubmit'],
+					},
+				},
+				options: [
+					{
+						displayName: 'CSV',
+						name: 'csv',
+						type: 'string',
+						typeOptions: {
+							rows: 4,
+						},
+						default: '',
+						description: 'Inline CSV text containing VINs (one per line, or a single vin column)',
+					},
+					{
+						displayName: 'CSV URL',
+						name: 'csvUrl',
+						type: 'string',
+						default: '',
+						placeholder: 'e.g. https://docs.google.com/spreadsheets/d/SHEET_ID/edit',
+						description:
+							'HTTPS URL to a CSV of VINs (Google Sheets, S3, Dropbox, and other allowed hosts)',
+					},
+					{
+						displayName: 'Webhook URL',
+						name: 'webhookUrl',
+						type: 'string',
+						default: '',
+						placeholder: 'e.g. https://your-server.com/webhook',
+						description: 'HTTPS URL to notify when the batch finishes',
+					},
+				],
+			},
+			{
+				displayName: 'Batch ID',
+				name: 'batchId',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['recallsBatch'],
+						operation: ['recallsBatchStatus', 'recallsBatchResults', 'recallsBatchDownload'],
+					},
+				},
+				default: '',
+				placeholder: 'e.g. brb_mnablbn7_wvbaqv',
+				description: 'Batch ID returned by Submit Batch',
+			},
+
+			// ===== OWNERSHIP PARAMETERS =====
+			{
+				displayName: 'VIN',
+				name: 'vin',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['ownership'],
+						operation: ['ownershipVin'],
+					},
+				},
+				default: '',
+				placeholder: 'e.g. 1FT8X3BT0BEA61538',
+				description: 'Vehicle Identification Number (17 characters)',
+			},
+			{
+				displayName: 'First Name',
+				name: 'first_name',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['ownership'],
+						operation: ['ownershipPerson'],
+					},
+				},
+				default: '',
+				placeholder: 'e.g. John',
+				description: 'First name (max 50 characters)',
+			},
+			{
+				displayName: 'Last Name',
+				name: 'last_name',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['ownership'],
+						operation: ['ownershipPerson'],
+					},
+				},
+				default: '',
+				placeholder: 'e.g. Sample',
+				description: 'Last name (max 50 characters)',
+			},
+			{
+				displayName: 'Address',
+				name: 'address',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['ownership'],
+						operation: ['ownershipPerson', 'ownershipAddress'],
+					},
+				},
+				default: '',
+				placeholder: 'e.g. 123 Example St',
+				description: 'Street address only, no city/state (max 100 characters)',
+			},
+			{
+				displayName: 'ZIP',
+				name: 'zip',
+				type: 'string',
+				required: true,
+				displayOptions: {
+					show: {
+						resource: ['ownership'],
+						operation: ['ownershipPerson', 'ownershipAddress', 'ownershipZip'],
+					},
+				},
+				default: '',
+				placeholder: 'e.g. 90210',
+				description: 'US ZIP code (ZIP+4 allowed except for ZIP search, which requires 5 digits)',
+			},
+			{
+				displayName: 'Additional Options',
+				name: 'additionalOptions',
+				type: 'collection',
+				placeholder: 'Add Option',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['ownership'],
+						operation: ['ownershipVin', 'ownershipPerson'],
+					},
+				},
+				options: [
+					{
+						displayName: 'Include',
+						name: 'include',
+						type: 'string',
+						default: '',
+						placeholder: 'e.g. demographics,emails,phones,vehicle_history',
+						description:
+							'Comma-separated subset of demographics, emails, phones, vehicle_history. Omit to get everything.',
+					},
+				],
+			},
+			{
+				displayName: 'Additional Options',
+				name: 'additionalOptions',
+				type: 'collection',
+				placeholder: 'Add Option',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['ownership'],
+						operation: ['ownershipAddress'],
+					},
+				},
+				options: [
+					{
+						displayName: 'Include',
+						name: 'include',
+						type: 'string',
+						default: '',
+						placeholder: 'e.g. demographics,emails,phones,vehicle_history',
+						description:
+							'Comma-separated subset of demographics, emails, phones, vehicle_history. Omit to get everything.',
+					},
+					{
+						displayName: 'Variant',
+						name: 'variant',
+						type: 'string',
+						default: '',
+						placeholder: 'e.g. vehicle_history',
+						description:
+							'Legacy alias still accepted by the API. Prefer Include; variant no longer changes the response.',
+					},
+				],
+			},
+			{
+				displayName: 'Additional Options',
+				name: 'additionalOptions',
+				type: 'collection',
+				placeholder: 'Add Option',
+				default: {},
+				displayOptions: {
+					show: {
+						resource: ['ownership'],
+						operation: ['ownershipZip'],
+					},
+				},
+				options: [
+					{
+						displayName: 'Gender',
+						name: 'gender',
+						type: 'options',
+						options: [
+							{ name: 'Female', value: 'F' },
+							{ name: 'Male', value: 'M' },
+						],
+						default: 'F',
+						description: 'Filter by gender (M or F)',
+					},
+					{
+						displayName: 'Include',
+						name: 'include',
+						type: 'string',
+						default: '',
+						placeholder: 'e.g. demographics,emails,phones,vehicle_history',
+						description:
+							'Comma-separated subset of demographics, emails, phones, vehicle_history. Omit to get everything.',
+					},
+					{
+						displayName: 'Income',
+						name: 'income',
+						type: 'options',
+						options: [
+							{ name: 'A — Under $10,000', value: 'A' },
+							{ name: 'B — $10,000–$19,999', value: 'B' },
+							{ name: 'C — $20,000–$29,999', value: 'C' },
+							{ name: 'D — $30,000–$39,999', value: 'D' },
+							{ name: 'E — $40,000–$49,999', value: 'E' },
+							{ name: 'F — $50,000–$59,999', value: 'F' },
+							{ name: 'G — $60,000–$74,999', value: 'G' },
+							{ name: 'H — $75,000–$99,999', value: 'H' },
+							{ name: 'K — $100,000–$149,999', value: 'K' },
+							{ name: 'L — $150,000–$174,999', value: 'L' },
+							{ name: 'M — $175,000–$199,999', value: 'M' },
+							{ name: 'N — $200,000–$249,999', value: 'N' },
+							{ name: 'O — $250K+', value: 'O' },
+							{ name: 'Unknown', value: 'Unknown' },
+						],
+						default: 'A',
+						description: 'Income bucket code or label',
+					},
+					{
+						displayName: 'Limit',
+						name: 'limit',
+						type: 'number',
+						typeOptions: {
+							minValue: 1,
+							maxValue: 100,
+						},
+						default: 50,
+						description: 'Max number of results to return',
+					},
+					{
+						displayName: 'Max Age',
+						name: 'max_age',
+						type: 'number',
+						default: '',
+						description: 'Maximum age filter (whole number)',
+					},
+					{
+						displayName: 'Min Age',
+						name: 'min_age',
+						type: 'number',
+						default: '',
+						description: 'Minimum age filter (whole number)',
+					},
+					{
+						displayName: 'Page',
+						name: 'page',
+						type: 'number',
+						default: 1,
+						description: 'Results page (default 1)',
+					},
+					{
+						displayName: 'Variant',
+						name: 'variant',
+						type: 'string',
+						default: '',
+						placeholder: 'e.g. vehicle_history',
+						description:
+							'Legacy alias still accepted by the API. Prefer Include; variant no longer changes the response.',
+					},
+				],
+			},
 
 			// ===== DIAGNOSTIC PARAMETERS =====
 			{
@@ -592,6 +1065,7 @@ export class CarsXe implements INodeType {
 
 				let endpoint = '';
 				let method: 'GET' | 'POST' = 'GET';
+				let parseJson = true;
 				const qs: IDataObject = {
 					key: apiKey,
 					source: 'n8n',
@@ -730,6 +1204,140 @@ export class CarsXe implements INodeType {
 						break;
 					}
 
+					case 'recallsYmm': {
+						endpoint = '/v1/recalls-ymm';
+						qs.year = this.getNodeParameter('year', i) as string;
+						qs.make = this.getNodeParameter('make', i) as string;
+						qs.model = this.getNodeParameter('model', i) as string;
+						break;
+					}
+
+					case 'ymmOptions': {
+						endpoint = '/v1/ymm-options';
+						const additionalOptions = this.getNodeParameter(
+							'additionalOptions',
+							i,
+							{},
+						) as IDataObject;
+						if (additionalOptions.dimension) qs.dimension = additionalOptions.dimension;
+						if (additionalOptions.year) qs.year = additionalOptions.year;
+						if (additionalOptions.make) qs.make = additionalOptions.make;
+						if (additionalOptions.model) qs.model = additionalOptions.model;
+						if (additionalOptions.trim) qs.trim = additionalOptions.trim;
+						break;
+					}
+
+					case 'recallsBatchSubmit': {
+						method = 'POST';
+						endpoint = '/v1/recalls-batch/submit';
+						const vinsRaw = this.getNodeParameter('vins', i, '') as string;
+						const vins = vinsRaw
+							.split(/[\n,]+/)
+							.map((vin) => vin.trim())
+							.filter((vin) => vin.length > 0);
+						const additionalOptions = this.getNodeParameter(
+							'additionalOptions',
+							i,
+							{},
+						) as IDataObject;
+						body = {};
+						if (vins.length) body.vins = vins;
+						if (additionalOptions.csv) body.csv = additionalOptions.csv;
+						if (additionalOptions.csvUrl) body.csvUrl = additionalOptions.csvUrl;
+						if (additionalOptions.webhookUrl) body.webhookUrl = additionalOptions.webhookUrl;
+						if (!body.vins && !body.csv && !body.csvUrl) {
+							throw new NodeOperationError(
+								this.getNode(),
+								'Provide at least one of VINs, CSV, or CSV URL',
+								{ itemIndex: i },
+							);
+						}
+						break;
+					}
+
+					case 'recallsBatchStatus': {
+						endpoint = '/v1/recalls-batch/status';
+						qs.batchId = this.getNodeParameter('batchId', i) as string;
+						break;
+					}
+
+					case 'recallsBatchResults': {
+						endpoint = '/v1/recalls-batch/results';
+						qs.batchId = this.getNodeParameter('batchId', i) as string;
+						break;
+					}
+
+					case 'recallsBatchDownload': {
+						endpoint = '/v1/recalls-batch/download';
+						qs.batchId = this.getNodeParameter('batchId', i) as string;
+						parseJson = false;
+						break;
+					}
+
+					case 'ownershipVin': {
+						endpoint = '/v1/ownership/vin';
+						qs.vin = this.getNodeParameter('vin', i) as string;
+						const additionalOptions = this.getNodeParameter(
+							'additionalOptions',
+							i,
+							{},
+						) as IDataObject;
+						if (additionalOptions.include) qs.include = additionalOptions.include;
+						break;
+					}
+
+					case 'ownershipPerson': {
+						endpoint = '/v1/ownership/person';
+						qs.first_name = this.getNodeParameter('first_name', i) as string;
+						qs.last_name = this.getNodeParameter('last_name', i) as string;
+						qs.address = this.getNodeParameter('address', i) as string;
+						qs.zip = this.getNodeParameter('zip', i) as string;
+						const additionalOptions = this.getNodeParameter(
+							'additionalOptions',
+							i,
+							{},
+						) as IDataObject;
+						if (additionalOptions.include) qs.include = additionalOptions.include;
+						break;
+					}
+
+					case 'ownershipAddress': {
+						endpoint = '/v1/ownership/address';
+						qs.address = this.getNodeParameter('address', i) as string;
+						qs.zip = this.getNodeParameter('zip', i) as string;
+						const additionalOptions = this.getNodeParameter(
+							'additionalOptions',
+							i,
+							{},
+						) as IDataObject;
+						if (additionalOptions.include) qs.include = additionalOptions.include;
+						if (additionalOptions.variant) qs.variant = additionalOptions.variant;
+						break;
+					}
+
+					case 'ownershipZip': {
+						endpoint = '/v1/ownership/zip';
+						qs.zip = this.getNodeParameter('zip', i) as string;
+						const additionalOptions = this.getNodeParameter(
+							'additionalOptions',
+							i,
+							{},
+						) as IDataObject;
+						if (additionalOptions.gender) qs.gender = additionalOptions.gender;
+						if (additionalOptions.min_age !== undefined && additionalOptions.min_age !== '') {
+							qs.min_age = additionalOptions.min_age;
+						}
+						if (additionalOptions.max_age !== undefined && additionalOptions.max_age !== '') {
+							qs.max_age = additionalOptions.max_age;
+						}
+						if (additionalOptions.income) qs.income = additionalOptions.income;
+						if (additionalOptions.page) qs.page = additionalOptions.page;
+						if (additionalOptions.limit) qs.limit = additionalOptions.limit;
+						if (additionalOptions.include) qs.include = additionalOptions.include;
+						if (additionalOptions.variant) qs.variant = additionalOptions.variant;
+						break;
+					}
+
 					default:
 						throw new NodeOperationError(
 							this.getNode(),
@@ -743,7 +1351,7 @@ export class CarsXe implements INodeType {
 					method,
 					baseURL: 'https://api.carsxe.com',
 					url: endpoint,
-					json: true,
+					json: parseJson,
 					ignoreHttpStatusErrors: true,
 					returnFullResponse: true,
 				};
@@ -759,8 +1367,39 @@ export class CarsXe implements INodeType {
 				}
 
 				const fullResponse = await this.helpers.httpRequest(options);
-				const response = fullResponse.body;
 				const statusCode = fullResponse.statusCode;
+				let response = fullResponse.body;
+
+				if (typeof response === 'string') {
+					const trimmed = response.trim();
+					if (trimmed.startsWith('{') || trimmed.startsWith('[')) {
+						try {
+							response = JSON.parse(trimmed);
+						} catch {
+							// Keep the raw string (e.g. CSV download)
+						}
+					}
+				}
+
+				if (typeof response === 'string') {
+					if (statusCode >= 400) {
+						throw new NodeOperationError(
+							this.getNode(),
+							`CarsXE API Error (${statusCode}): ${response}`,
+							{ itemIndex: i },
+						);
+					}
+
+					returnData.push({
+						json: {
+							success: true,
+							batchId: qs.batchId,
+							csv: response,
+						},
+						pairedItem: { item: i },
+					});
+					continue;
+				}
 
 				// Handle HTTP error status codes (401, 403, 404, 500, etc.)
 				if (statusCode >= 400) {

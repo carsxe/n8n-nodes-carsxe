@@ -12,7 +12,7 @@ export class CarsXEApi implements ICredentialType {
 	icon = {
 		light: 'file:carsxeLogo.svg',
 		dark: 'file:carsxeLogo.dark.svg',
-	};
+	} as const;
 	properties: INodeProperties[] = [
 		{
 			displayName: 'API Key',

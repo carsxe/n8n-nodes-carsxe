@@ -1366,7 +1366,8 @@ export class CarsXe implements INodeType {
 					options.body = body;
 				}
 
-				const fullResponse = await this.helpers.httpRequestWithAuthentication(
+				const fullResponse = await this.helpers.httpRequestWithAuthentication.call(
+					this,
 					'carsXEApi',
 					options,
 				);

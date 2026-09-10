@@ -4,6 +4,9 @@ import {
 	INodeType,
 	INodeTypeDescription,
 	IDataObject,
+	JsonObject,
+	NodeApiError,
+	NodeConnectionTypes,
 	NodeOperationError,
 	IHttpRequestOptions,
 	GenericValue,
@@ -13,7 +16,10 @@ export class CarsXe implements INodeType {
 	description: INodeTypeDescription = {
 		displayName: 'CarsXE',
 		name: 'carsXe',
-		icon: 'file:carsxeLogo.svg',
+		icon: {
+			light: 'file:carsxeLogo.svg',
+			dark: 'file:carsxeLogo.dark.svg',
+		},
 		group: ['transform'],
 		version: 1,
 		subtitle: '={{$parameter["resource"] + ": " + $parameter["operation"]}}',
@@ -21,8 +27,8 @@ export class CarsXe implements INodeType {
 		defaults: {
 			name: 'CarsXE',
 		},
-		inputs: ['main'],
-		outputs: ['main'],
+		inputs: [NodeConnectionTypes.Main],
+		outputs: [NodeConnectionTypes.Main],
 		usableAsTool: true,
 		credentials: [
 			{
@@ -537,8 +543,7 @@ export class CarsXe implements INodeType {
 					{
 						displayName: 'Color',
 						name: 'color',
-						// eslint-disable-next-line n8n-nodes-base/node-param-color-type-unused
-						type: 'string',
+						type: 'color',
 						default: '',
 						placeholder: 'e.g. red',
 						description: 'The vehicle color',
@@ -1055,8 +1060,6 @@ export class CarsXe implements INodeType {
 	async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
 		const items = this.getInputData();
 		const returnData: INodeExecutionData[] = [];
-		const credentials = await this.getCredentials('carsXEApi');
-		const apiKey = credentials.apiKey as string;
 
 		for (let i = 0; i < items.length; i++) {
 			try {
@@ -1067,7 +1070,6 @@ export class CarsXe implements INodeType {
 				let method: 'GET' | 'POST' = 'GET';
 				let parseJson = true;
 				const qs: IDataObject = {
-					key: apiKey,
 					source: 'n8n',
 				};
 				let body: IDataObject | undefined;
@@ -1351,22 +1353,24 @@ export class CarsXe implements INodeType {
 					method,
 					baseURL: 'https://api.carsxe.com',
 					url: endpoint,
+					qs,
 					json: parseJson,
 					ignoreHttpStatusErrors: true,
 					returnFullResponse: true,
 				};
 
-				if (method === 'GET') {
-					options.qs = qs;
-				} else {
-					options.url = `${endpoint}?key=${apiKey}&source=n8n`;
+				if (method !== 'GET') {
 					options.headers = {
 						'Content-Type': 'application/json',
 					};
 					options.body = body;
 				}
 
-				const fullResponse = await this.helpers.httpRequest(options);
+				const fullResponse = await this.helpers.httpRequestWithAuthentication.call(
+					this,
+					'carsXEApi',
+					options,
+				);
 				const statusCode = fullResponse.statusCode;
 				let response = fullResponse.body;
 
@@ -1533,7 +1537,7 @@ export class CarsXe implements INodeType {
 					});
 					continue;
 				}
-				throw error;
+				throw new NodeApiError(this.getNode(), error as JsonObject);
 			}
 		}
 		return [returnData];

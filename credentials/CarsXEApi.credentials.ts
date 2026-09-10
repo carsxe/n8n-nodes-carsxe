@@ -9,7 +9,10 @@ export class CarsXEApi implements ICredentialType {
 	name = 'carsXEApi';
 	displayName = 'CarsXE API';
 	documentationUrl = 'https://api.carsxe.com/docs';
-	icon = 'file:carsxeLogo.svg' as const;
+	icon = {
+		light: 'file:carsxeLogo.svg',
+		dark: 'file:carsxeLogo.dark.svg',
+	};
 	properties: INodeProperties[] = [
 		{
 			displayName: 'API Key',
@@ -27,7 +30,7 @@ export class CarsXEApi implements ICredentialType {
 	authenticate: IAuthenticateGeneric = {
 		type: 'generic',
 		properties: {
-			headers: {
+			qs: {
 				key: '={{$credentials.apiKey}}',
 			},
 		},

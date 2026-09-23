@@ -4,21 +4,34 @@
 [![npm downloads](https://img.shields.io/npm/dm/n8n-nodes-carsxe.svg)](https://www.npmjs.com/package/n8n-nodes-carsxe)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-**Comprehensive vehicle data integration for [n8n](https://n8n.io)** - VIN decoding, license plate lookup, vehicle history, market values, and more using the [CarsXE API](https://www.carsxe.com).
+**Comprehensive vehicle data integration for [n8n](https://n8n.io)** - VIN decoding, license plate lookup, vehicle history, market values, and more using [CarsXE](https://carsxe.com).
+
+🌐 **Website:** [https://carsxe.com](https://carsxe.com)  
+📄 **Docs:** [https://docs.carsxe.com](https://docs.carsxe.com)
+
+### Products
+
+- [Vehicle History](https://carsxe.com/vehicle-history)
+- [Vehicle Plate Decoder](https://carsxe.com/vehicle-plate-decoder)
+- [Vehicle Specifications](https://carsxe.com/vehicle-specifications)
+- [International VIN Decoder](https://carsxe.com/international-vin-decoder)
+- [Vehicle Images](https://carsxe.com/vehicle-images)
+- [Vehicle Recalls](https://carsxe.com/vehicle-recalls)
+- [Vehicle Market Value](https://carsxe.com/vehicle-market-value)
 
 ---
 
 ## 🚗 Features
 
-- **VIN Decoding** - Decode US & International VINs with full specifications
-- **License Plate Lookup** - Multi-country plate decoder (US, CA, AU, UK, PK)
-- **Vehicle History** - Ownership records and accident history
-- **Market Values** - Real-time vehicle valuations with optional state, mileage, and condition adjustments
-- **Safety Recalls** - Check manufacturer recalls by VIN or year/make/model
-- **Recalls Batch** - Submit, poll, and download bulk VIN recall checks
+- **VIN Decoding** - Decode US & International VINs with full specifications ([Vehicle Specifications](https://carsxe.com/vehicle-specifications), [International VIN Decoder](https://carsxe.com/international-vin-decoder))
+- **License Plate Lookup** - Multi-country plate decoder (US, CA, AU, UK, PK) ([Vehicle Plate Decoder](https://carsxe.com/vehicle-plate-decoder))
+- **Vehicle History** - Ownership records and accident history ([Vehicle History](https://carsxe.com/vehicle-history))
+- **Market Values** - Real-time vehicle valuations with optional state, mileage, and condition adjustments ([Vehicle Market Value](https://carsxe.com/vehicle-market-value))
+- **Safety Recalls** - Check manufacturer recalls by VIN or year/make/model ([Vehicle Recalls](https://carsxe.com/vehicle-recalls))
+- **Recalls Batch** - Submit, poll, and download bulk VIN recall checks ([Vehicle Recalls](https://carsxe.com/vehicle-recalls))
 - **YMM Options** - Populate year, make, model, and variant dropdowns
 - **Ownership** - Enterprise lookups by VIN, person, address, or ZIP
-- **Vehicle Images** - Fetch professional vehicle photos
+- **Vehicle Images** - Fetch professional vehicle photos ([Vehicle Images](https://carsxe.com/vehicle-images))
 - **OBD Codes** - Decode diagnostic trouble codes
 - **OCR Recognition** - Extract VINs and plates from images
 
@@ -71,30 +84,30 @@ docker run -d \
 
 ### VIN Operations
 
-- **Decode VIN** - Full vehicle specifications
-- **Decode International VIN** - Worldwide VIN support
-- **Get History Report** - Ownership & accident history
-- **Get Market Value** - Current market valuation (optional: state, mileage, condition)
-- **Get Safety Recalls** - Manufacturer recalls
+- **Decode VIN** - Full vehicle specifications ([Vehicle Specifications](https://carsxe.com/vehicle-specifications))
+- **Decode International VIN** - Worldwide VIN support ([International VIN Decoder](https://carsxe.com/international-vin-decoder))
+- **Get History Report** - Ownership & accident history ([Vehicle History](https://carsxe.com/vehicle-history))
+- **Get Market Value** - Current market valuation (optional: state, mileage, condition) ([Vehicle Market Value](https://carsxe.com/vehicle-market-value))
+- **Get Safety Recalls** - Manufacturer recalls ([Vehicle Recalls](https://carsxe.com/vehicle-recalls))
 
 ### License Plate Operations
 
-- **Decode License Plate** - Vehicle info from plate
-- **Recognize Plate From Image** - OCR plate extraction
+- **Decode License Plate** - Vehicle info from plate ([Vehicle Plate Decoder](https://carsxe.com/vehicle-plate-decoder))
+- **Recognize Plate From Image** - OCR plate extraction ([Vehicle Plate Decoder](https://carsxe.com/vehicle-plate-decoder))
 
 ### Vehicle Data Operations
 
-- **Get Images** - Professional vehicle photos
+- **Get Images** - Professional vehicle photos ([Vehicle Images](https://carsxe.com/vehicle-images))
 - **Query by Year/Make/Model** - Search by attributes
-- **Get Safety Recalls by Year/Make/Model** - Recalls without a VIN
+- **Get Safety Recalls by Year/Make/Model** - Recalls without a VIN ([Vehicle Recalls](https://carsxe.com/vehicle-recalls))
 - **Get YMM Options** - Years, makes, models, trims, or variants
 
 ### Recalls Batch Operations
 
-- **Submit Batch** - Queue up to 10,000 VINs (JSON, CSV, or CSV URL)
-- **Get Status** - Poll batch progress by `batchId`
-- **Get Results** - Fetch completed results as JSON
-- **Download Results** - Download completed results as CSV
+- **Submit Batch** - Queue up to 10,000 VINs (JSON, CSV, or CSV URL) ([Vehicle Recalls](https://carsxe.com/vehicle-recalls))
+- **Get Status** - Poll batch progress by `batchId` ([Vehicle Recalls](https://carsxe.com/vehicle-recalls))
+- **Get Results** - Fetch completed results as JSON ([Vehicle Recalls](https://carsxe.com/vehicle-recalls))
+- **Download Results** - Download completed results as CSV ([Vehicle Recalls](https://carsxe.com/vehicle-recalls))
 
 ### Ownership Operations (Enterprise)
 
@@ -178,19 +191,19 @@ Year: 2019 (in Additional Options)
 
 ## 🔄 Common Workflows
 
-**VIN Decoder API**
+**[VIN Decoder API](https://carsxe.com/vehicle-specifications)**
 
 ```
 [Webhook] → [CarsXE: Decode VIN] → [HTTP Response]
 ```
 
-**License Plate Scanner**
+**[License Plate Scanner](https://carsxe.com/vehicle-plate-decoder)**
 
 ```
 [Webhook] → [CarsXE: Recognize Plate] → [Database]
 ```
 
-**Daily Recall Checker**
+**[Daily Recall Checker](https://carsxe.com/vehicle-recalls)**
 
 ```
 [Schedule] → [CarsXE: Get Recalls] → [Email/Slack]

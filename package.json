@@ -15,11 +15,11 @@
 		"automotive"
 	],
 	"license": "MIT",
-	"homepage": "https://api.carsxe.com/",
+	"homepage": "https://carsxe.com",
 	"author": {
 		"name": "CarsXE",
 		"email": "devops@carsxe.com",
-		"url": "https://api.carsxe.com/"
+		"url": "https://carsxe.com"
 	},
 	"repository": {
 		"type": "git",
